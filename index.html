@@ -1,47 +1,58 @@
+<!DOCTYPE html>
 <html>
 <head>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script>
+    var accessToken = "ed2b4b082b6e7f701101ccb4b469675e45735485";
+    var deviceID = "0a10aced202194944a055c30";
+    var url = "https://api.particle.io/v1/devices/" + deviceID + "/led";
 
-<script>
-var accessToken = "ed2b4b082b6e7f701101ccb4b469675e45735485";
-var deviceID = "0a10aced202194944a055c30";
-var url = "https://api.particle.io/v1/devices/" + deviceID + "/led";
+    function showMessage(msg, color = "black") {
+      $("#status").text(msg).css("color", color);
+    }
 
-function switchOn() {
-    $.post(url, {
+    function handleResponse(data) {
+      var val = data.return_value;
+      if (val === 1) {
+        showMessage("✅ LED ENCENDIDO", "green");
+      } else if (val === 0) {
+        showMessage("🔴 LED APAGADO", "red");
+      } else if (val === -1) {
+        showMessage("⚠️ Parámetro inválido", "orange");
+      } else {
+        showMessage("❓ Valor desconocido: " + val, "gray");
+      }
+    }
+
+    function handleError(xhr) {
+      showMessage("❌ Error HTTP: " + xhr.status + " – " + xhr.responseText, "darkred");
+    }
+
+    function switchOn() {
+      $.post(url, {
         params: "on",
         access_token: accessToken
-    })
-    .done(function(data) {
-        alert("✅ Encendido OK: " + JSON.stringify(data));
-    })
-    .fail(function(xhr) {
-        alert("❌ Error al encender: " + xhr.status + " " + xhr.responseText);
-    });
-}
+      })
+      .done(handleResponse)
+      .fail(handleError);
+    }
 
-function switchOff() {
-    $.post(url, {
+    function switchOff() {
+      $.post(url, {
         params: "off",
         access_token: accessToken
-    })
-    .done(function(data) {
-        alert("✅ Apagado OK: " + JSON.stringify(data));
-    })
-    .fail(function(xhr) {
-        alert("❌ Error al apagar: " + xhr.status + " " + xhr.responseText);
-    });
-}
-</script>
-
-</head>	
+      })
+      .done(handleResponse)
+      .fail(handleError);
+    }
+  </script>
+</head>
 
 <body>
+  <h1>On/Off Control</h1>
+  <input type="button" onClick="switchOn()" value="Encender LED" />
+  <input type="button" onClick="switchOff()" value="Apagar LED" />
 
-<h1>On/Off Control</h1>	
-	
-<input type="button" onClick="switchOn()" value="ON"/>
-<input type="button" onClick="switchOff()" value="OFF"/>
-	
+  <div id="status" style="margin-top:20px; font-size:18px; font-weight:bold;"></div>
 </body>
 </html>
