@@ -1,33 +1,72 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Control de LED</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      color: #333;
+    }
+    .btn {
+      font-size: 18px;
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .btn-on {
+      background-color: #28a745;
+      color: white;
+    }
+    .btn-on:hover {
+      background-color: #218838;
+    }
+    .btn-off {
+      background-color: #dc3545;
+      color: white;
+    }
+    .btn-off:hover {
+      background-color: #c82333;
+    }
+    #status {
+      margin-top: 30px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+  </style>
   <script>
     var accessToken = "ed2b4b082b6e7f701101ccb4b469675e45735485";
     var deviceID = "0a10aced202194944a055c30";
     var url = "https://api.particle.io/v1/devices/" + deviceID + "/led";
 
-    function updateStatus(message) {
-      document.getElementById("status").textContent = message;
+    function showMessage(msg, color = "black") {
+      $("#status").text(msg).css("color", color);
     }
 
     function handleResponse(data) {
-      var value = data.return_value;
-      if (value === 1) {
-        updateStatus("Estado: LED ENCENDIDO");
-      } else if (value === 0) {
-        updateStatus("Estado: LED APAGADO");
-      } else if (value === -1) {
-        updateStatus("Estado: Parámetro inválido");
+      var val = data.return_value;
+      if (val === 1) {
+        showMessage("✅ LED ENCENDIDO", "green");
+      } else if (val === 0) {
+        showMessage("🔴 LED APAGADO", "red");
+      } else if (val === -1) {
+        showMessage("⚠️ Parámetro inválido", "orange");
       } else {
-        updateStatus("Estado: Desconocido (" + value + ")");
+        showMessage("❓ Valor desconocido: " + val, "gray");
       }
     }
 
     function handleError(xhr) {
-      updateStatus("Error: " + xhr.status + " – " + xhr.responseText);
+      showMessage("❌ Error: " + xhr.status + " – " + xhr.responseText, "darkred");
     }
 
     function switchOn() {
@@ -45,8 +84,8 @@
 </head>
 <body>
   <h1>Control de LED</h1>
-  <button onclick="switchOn()">Encender</button>
-  <button onclick="switchOff()">Apagar</button>
-  <p id="status">Estado: ---</p>
+  <button class="btn btn-on" onclick="switchOn()">Encender</button>
+  <button class="btn btn-off" onclick="switchOff()">Apagar</button>
+  <div id="status"></div>
 </body>
 </html>
