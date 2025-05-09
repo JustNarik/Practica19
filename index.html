@@ -13,29 +13,6 @@
       document.getElementById("status").textContent = message;
     }
 
-    // ✅ Esta es la función corregida
-    function getCurrentLEDStatus() {
-      $.ajax({
-        url: url,
-        type: "GET",
-        headers: {
-          "Authorization": "Bearer " + accessToken
-        },
-        success: function(data) {
-          if (data.result === 1) {
-            updateStatus("Estado: LED ENCENDIDO");
-          } else if (data.result === 0) {
-            updateStatus("Estado: LED APAGADO");
-          } else {
-            updateStatus("Estado: Desconocido");
-          }
-        },
-        error: function(xhr) {
-          updateStatus("Error al obtener el estado: " + xhr.status + " – " + xhr.responseText);
-        }
-      });
-    }
-
     function handleResponse(data) {
       var value = data.return_value;
       if (value === 1) {
@@ -64,17 +41,12 @@
         .done(handleResponse)
         .fail(handleError);
     }
-
-    // Ejecutar al cargar la página
-    $(document).ready(function() {
-      getCurrentLEDStatus();
-    });
   </script>
 </head>
 <body>
   <h1>Control de LED</h1>
   <button onclick="switchOn()">Encender</button>
   <button onclick="switchOff()">Apagar</button>
-  <p id="status">Cargando estado del LED...</p>
+  <p id="status">Estado: ---</p>
 </body>
 </html>
