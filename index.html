@@ -9,31 +9,33 @@
     var deviceID = "0a10aced202194944a055c30";
     var url = "https://api.particle.io/v1/devices/" + deviceID + "/led";
 
-    // Actualizar el estado del LED en la página
     function updateStatus(message) {
       document.getElementById("status").textContent = message;
     }
 
-    // Función para obtener el estado inicial del LED
+    // ✅ Esta es la función corregida
     function getCurrentLEDStatus() {
-      $.get("https://api.particle.io/v1/devices/" + deviceID + "/led", {
-        access_token: accessToken
-      })
-      .done(function(data) {
-        if (data.return_value === 1) {
-          updateStatus("Estado: LED ENCENDIDO");
-        } else if (data.return_value === 0) {
-          updateStatus("Estado: LED APAGADO");
-        } else {
-          updateStatus("Estado: Desconocido");
+      $.ajax({
+        url: url,
+        type: "GET",
+        headers: {
+          "Authorization": "Bearer " + accessToken
+        },
+        success: function(data) {
+          if (data.result === 1) {
+            updateStatus("Estado: LED ENCENDIDO");
+          } else if (data.result === 0) {
+            updateStatus("Estado: LED APAGADO");
+          } else {
+            updateStatus("Estado: Desconocido");
+          }
+        },
+        error: function(xhr) {
+          updateStatus("Error al obtener el estado: " + xhr.status + " – " + xhr.responseText);
         }
-      })
-      .fail(function(xhr) {
-        updateStatus("Error al obtener el estado: " + xhr.status + " – " + xhr.responseText);
       });
     }
 
-    // Responder a la petición de encender/apagar el LED
     function handleResponse(data) {
       var value = data.return_value;
       if (value === 1) {
@@ -47,26 +49,23 @@
       }
     }
 
-    // Manejar errores de la petición
     function handleError(xhr) {
       updateStatus("Error: " + xhr.status + " – " + xhr.responseText);
     }
 
-    // Encender el LED
     function switchOn() {
       $.post(url, { params: "on", access_token: accessToken })
         .done(handleResponse)
         .fail(handleError);
     }
 
-    // Apagar el LED
     function switchOff() {
       $.post(url, { params: "off", access_token: accessToken })
         .done(handleResponse)
         .fail(handleError);
     }
 
-    // Obtener el estado del LED al cargar la página
+    // Ejecutar al cargar la página
     $(document).ready(function() {
       getCurrentLEDStatus();
     });
