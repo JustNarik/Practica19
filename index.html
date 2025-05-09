@@ -4,21 +4,36 @@
 
 <script>
 var accessToken = "ed2b4b082b6e7f701101ccb4b469675e45735485";
-var deviceID = "0a10aced202194944a055c30"
-
+var deviceID = "0a10aced202194944a055c30";
 var url = "https://api.particle.io/v1/devices/" + deviceID + "/led";
 
-function switchOn()
-{
-	$.post(url, {params: "on", access_token: accessToken });
-}  
+function switchOn() {
+    $.post(url, {
+        params: "on",
+        access_token: accessToken
+    })
+    .done(function(data) {
+        alert("✅ Encendido OK: " + JSON.stringify(data));
+    })
+    .fail(function(xhr) {
+        alert("❌ Error al encender: " + xhr.status + " " + xhr.responseText);
+    });
+}
 
-function switchOff()
-{
-	$.post(url, {params: "off", access_token: accessToken });
-}  
-
+function switchOff() {
+    $.post(url, {
+        params: "off",
+        access_token: accessToken
+    })
+    .done(function(data) {
+        alert("✅ Apagado OK: " + JSON.stringify(data));
+    })
+    .fail(function(xhr) {
+        alert("❌ Error al apagar: " + xhr.status + " " + xhr.responseText);
+    });
+}
 </script>
+
 </head>	
 
 <body>
