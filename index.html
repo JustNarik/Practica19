@@ -1,58 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+  <meta charset="UTF-8">
+  <title>Control de LED</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script>
     var accessToken = "ed2b4b082b6e7f701101ccb4b469675e45735485";
     var deviceID = "0a10aced202194944a055c30";
     var url = "https://api.particle.io/v1/devices/" + deviceID + "/led";
 
-    function showMessage(msg, color = "black") {
-      $("#status").text(msg).css("color", color);
+    function updateStatus(message) {
+      document.getElementById("status").textContent = message;
     }
 
     function handleResponse(data) {
-      var val = data.return_value;
-      if (val === 1) {
-        showMessage("✅ LED ENCENDIDO", "green");
-      } else if (val === 0) {
-        showMessage("🔴 LED APAGADO", "red");
-      } else if (val === -1) {
-        showMessage("⚠️ Parámetro inválido", "orange");
+      var value = data.return_value;
+      if (value === 1) {
+        updateStatus("Estado: LED ENCENDIDO");
+      } else if (value === 0) {
+        updateStatus("Estado: LED APAGADO");
+      } else if (value === -1) {
+        updateStatus("Estado: Parámetro inválido");
       } else {
-        showMessage("❓ Valor desconocido: " + val, "gray");
+        updateStatus("Estado: Desconocido (" + value + ")");
       }
     }
 
     function handleError(xhr) {
-      showMessage("❌ Error HTTP: " + xhr.status + " – " + xhr.responseText, "darkred");
+      updateStatus("Error: " + xhr.status + " – " + xhr.responseText);
     }
 
     function switchOn() {
-      $.post(url, {
-        params: "on",
-        access_token: accessToken
-      })
-      .done(handleResponse)
-      .fail(handleError);
+      $.post(url, { params: "on", access_token: accessToken })
+        .done(handleResponse)
+        .fail(handleError);
     }
 
     function switchOff() {
-      $.post(url, {
-        params: "off",
-        access_token: accessToken
-      })
-      .done(handleResponse)
-      .fail(handleError);
+      $.post(url, { params: "off", access_token: accessToken })
+        .done(handleResponse)
+        .fail(handleError);
     }
   </script>
 </head>
-
 <body>
-  <h1>On/Off Control</h1>
-  <input type="button" onClick="switchOn()" value="Encender LED" />
-  <input type="button" onClick="switchOff()" value="Apagar LED" />
-
-  <div id="status" style="margin-top:20px; font-size:18px; font-weight:bold;"></div>
+  <h1>Control de LED</h1>
+  <button onclick="switchOn()">Encender</button>
+  <button onclick="switchOff()">Apagar</button>
+  <p id="status">Estado: ---</p>
 </body>
 </html>
