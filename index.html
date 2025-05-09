@@ -20,9 +20,9 @@
         access_token: accessToken
       })
       .done(function(data) {
-        if (data.return_value === 0) {
+        if (data.return_value === 1) {
           updateStatus("Estado: LED ENCENDIDO");
-        } else if (data.return_value === 1) {
+        } else if (data.return_value === 0) {
           updateStatus("Estado: LED APAGADO");
         } else {
           updateStatus("Estado: Desconocido");
@@ -36,9 +36,9 @@
     // Responder a la petición de encender/apagar el LED
     function handleResponse(data) {
       var value = data.return_value;
-      if (value === 0) {
+      if (value === 1) {
         updateStatus("Estado: LED ENCENDIDO");
-      } else if (value === 1) {
+      } else if (value === 0) {
         updateStatus("Estado: LED APAGADO");
       } else if (value === -1) {
         updateStatus("Estado: Parámetro inválido");
